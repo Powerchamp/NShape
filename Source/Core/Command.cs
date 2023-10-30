@@ -390,6 +390,7 @@ namespace Dataweb.NShape.Commands {
 			foreach (ShapeConnectionInfo sci in connections[shape]) {
 				if (shape.IsConnected(sci.OwnPointId, sci.OtherShape) == ControlPointId.None)
 					continue;
+                Disconnections.Add(sci);
 				if (shape.HasControlPointCapability(sci.OwnPointId, ControlPointCapabilities.Glue)) {
 					shape.Disconnect(sci.OwnPointId);
 					if (Repository != null) Repository.DeleteConnection(shape, sci.OwnPointId, sci.OtherShape, sci.OtherPointId);
@@ -432,6 +433,10 @@ namespace Dataweb.NShape.Commands {
 
 
 		private Dictionary<Shape, List<ShapeConnectionInfo>> connections = new Dictionary<Shape, List<ShapeConnectionInfo>>();
+
+		private List<ShapeConnectionInfo> disconnections = new List<ShapeConnectionInfo>();
+        /// <ToBeCompleted></ToBeCompleted>
+        public List<ShapeConnectionInfo> Disconnections { get => disconnections; set => disconnections = value; }
 
 	}
 
@@ -1701,7 +1706,31 @@ namespace Dataweb.NShape.Commands {
 		List<ICommand> commands;
 	}
 
+    /// <summary>
+    /// Command for executing a list of connection commands.
+    /// The Label of this command is created by concatenating the labels of each command.
+    /// </summary>
+    public class AggregatedConnectionCommand : AggregatedCommand 
+	{
+        /// <ToBeCompleted></ToBeCompleted>
+        public AggregatedConnectionCommand()
+		: base((IRepository)null)
+        {
+        }
 
+
+        /// <ToBeCompleted></ToBeCompleted>
+        public AggregatedConnectionCommand(IRepository repository, IEnumerable<ICommand> commands)
+            : base(repository, commands)
+        {
+
+        }
+
+        /// <ToBeCompleted></ToBeCompleted>
+        public Shape SourceShape { get; set; }
+        /// <ToBeCompleted></ToBeCompleted>
+        public Shape TargetShape { get; set; }
+    }
 	#region Commands for Shapes
 
 	/// <summary>

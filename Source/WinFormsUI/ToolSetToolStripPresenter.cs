@@ -91,7 +91,7 @@ namespace Dataweb.NShape.WinFormsUI {
 			ToolStripButton button = new ToolStripButton(null, tool.SmallIcon);
 			button.Tag = tool;
 			button.CheckOnClick = true;
-			//button.Click += toolStripItem_Click;
+			button.Click += toolStripItem_Click;
 			//button.DoubleClick += toolBoxStrip_DoubleClick;
 			button.ToolTipText = tool.ToolTipText;
 			button.DoubleClickEnabled = true;
@@ -105,14 +105,21 @@ namespace Dataweb.NShape.WinFormsUI {
 			this.ItemClicked += new ToolStripItemClickedEventHandler(ToolSetToolStripPresenter_ItemClicked);
 		}
 
+        private void UnregisterToolStripEvents()
+        {
+            this.ItemClicked -= new ToolStripItemClickedEventHandler(ToolSetToolStripPresenter_ItemClicked);
+        }
 
-		private void RegisterToolBoxEventHandlers() {
+
+        private void RegisterToolBoxEventHandlers() {
 			toolSetController.Cleared += toolSetController_Cleared;
 			toolSetController.ToolAdded += toolSetController_ToolAdded;
 			toolSetController.ToolChanged += toolSetController_ToolChanged;
 			toolSetController.ToolRemoved += toolSetController_ToolRemoved;
 			toolSetController.ToolSelected += toolSetController_ToolSelected;
-		}
+			RegisterToolStripEvents();
+
+        }
 
 
 		private void UnregisterToolBoxEventHandlers() {
@@ -121,7 +128,9 @@ namespace Dataweb.NShape.WinFormsUI {
 			toolSetController.ToolChanged -= toolSetController_ToolChanged;
 			toolSetController.ToolAdded -= toolSetController_ToolAdded;
 			toolSetController.Cleared -= toolSetController_Cleared;
-		}
+			UnregisterToolStripEvents();
+
+        }
 
 		#endregion
 

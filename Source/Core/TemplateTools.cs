@@ -713,23 +713,29 @@ namespace Dataweb.NShape {
 				ActionDiagramPresenter.InsertShape(newShape);
 
 				// Create an aggregated command which performs connecting the new shape to other shapes in one step
-				AggregatedCommand aggregatedCommand = null;
+				//AggregatedCommand aggregatedCommand = null;
+				AggregatedConnectionCommand aggregatedCommand = null;
 				// Create connections
 				foreach (ControlPointId gluePointId in newShape.GetControlPointIds(ControlPointCapabilities.Glue)) {
-					ShapeConnectionInfo sci = PreviewShape.GetConnectionInfo(gluePointId, null);
+                   
+                    ShapeConnectionInfo sci = PreviewShape.GetConnectionInfo(gluePointId, null);
 					if (!sci.IsEmpty) {
-						if (aggregatedCommand == null) aggregatedCommand = new AggregatedCommand();
+						if (aggregatedCommand == null) aggregatedCommand = new AggregatedConnectionCommand();
 						aggregatedCommand.Add(new ConnectCommand(newShape, gluePointId, sci.OtherShape, sci.OtherPointId));
-					} else {
+						aggregatedCommand.SourceShape = sci.OtherShape;
+                        
+
+                    } else {
 						// Create connection for the last vertex
 						Point gluePtPos = newShape.GetControlPointPosition(gluePointId);
 						Locator target = FindNearestTarget(ActionDiagramPresenter, gluePtPos.X, gluePtPos.Y, ControlPointCapabilities.All, 
 								GetFindTargetRange(diagramPresenter), CreateIsConnectionTargetFilter(diagramPresenter, newShape, ControlPointId.LastVertex));
 						if (target.Shape != null && target.Shape.HasControlPointCapability(target.ControlPointId, ControlPointCapabilities.Glue) == false
 								&& CanActiveShapeConnectTo(newShape, gluePointId, target.Shape, target.ControlPointId)) {
-							if (aggregatedCommand == null) aggregatedCommand = new AggregatedCommand();
+							if (aggregatedCommand == null) aggregatedCommand = new AggregatedConnectionCommand();
 							aggregatedCommand.Add(new ConnectCommand(newShape, gluePointId, target.Shape, target.ControlPointId));
-						}
+                            aggregatedCommand.TargetShape = target.Shape;
+                        }
 					}
 				}
 				// execute command and insert it into the history
